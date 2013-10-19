@@ -22,9 +22,8 @@ function Socket(ws) {
     console.log('open');
   });
   this.ws.addEventListener('message', function (e) {
-    console.log('message', arguments);
     socket._process(e.data, {
-      binary: !e.data.length
+      binary: typeof e.data !== 'string'
     });
   });
   this.ws.addEventListener('close', function () {
@@ -33,7 +32,7 @@ function Socket(ws) {
 }
 
 function debug() {
-  console.log.apply(console, arguments);
+  // console.log.apply(console, arguments);
 }
 
 var TYPE_DISCONNECT = '0';
@@ -97,7 +96,6 @@ Socket.prototype.emit = function (name, _) {
     } else {
       binary = false;
     }
-
     data.args = params;
 
     this._send(type, id, JSON.stringify(data));
@@ -134,7 +132,6 @@ Socket.prototype._ack = function (mid, instance) {
   }
   var lastarg = arguments[arguments.length - 1];
   if (lastarg instanceof Buffer || lastarg instanceof Blob) {
-
     this._send(TYPE_ACK_BINARY, '', mid + '+' + JSON.stringify([].slice.call(arguments, 2, arguments.length - 1)));
     this.ws.send(lastarg);
   } else {
@@ -151,7 +148,7 @@ Socket.prototype._ack = function (mid, instance) {
 Socket.prototype._send = function (type, mid, data) {
   var msg = type + ':' + mid + ':' + this.endpoint;
 
-  if (type === TYPE_JSON || type === TYPE_EVENT || type === TYPE_ACK) {
+  if (data) {
     msg += ':' + data;
   }
 
@@ -168,8 +165,13 @@ Socket.prototype._send = function (type, mid, data) {
  * @param  {Object} flags flags.binary
  */
 Socket.prototype._process = function (data, flags) {
+  var bin;
   if (flags.binary) {
-
+    var _nextBin = this._nextBin;
+    type = _nextBin[0];
+    mid = _nextBin[1];
+    bin = data;
+    data = _nextBin[2];
   } else {
     var str = data;
     var pos = [0];
@@ -180,10 +182,13 @@ Socket.prototype._process = function (data, flags) {
     var mid = str.substring(2, pos[1]);
     var endpoint = str.substring(pos[1] + 1, pos[2]);
     var data = str.substring(pos[2] + 1);
-
+    if (type === TYPE_ACK_BINARY || type === TYPE_EVENT_BINARY) {
+      this._nextBin = [type, mid, data];
+      return;
+    }
   }
 
-  this._recv(type, mid, data);
+  this._recv(type, mid, data, bin);
 
 };
 
@@ -193,7 +198,7 @@ Socket.prototype._process = function (data, flags) {
  * @param  {String} mid  Message ID
  * @param  {String} data Message payload
  */
-Socket.prototype._recv = function (type, mid, data) {
+Socket.prototype._recv = function (type, mid, data, bin) {
   var handler;
   var args = [];
   if (type === TYPE_JSON) {
@@ -205,20 +210,27 @@ Socket.prototype._recv = function (type, mid, data) {
     }
   } else if (type === TYPE_MESSAGE) {
     handler = this._listeners.message;
+    args = [data];
   } else if (type === TYPE_EVENT) {
     data = JSON.parse(data);
     args = data.args;
     handler = this._listeners[data.name];
-  } else if (type === TYPE_ACK) {
+  } else if (type === TYPE_EVENT_BINARY) {
+    data = JSON.parse(this._nextBin[2]);
+    args = data.args;
+    [].push.call(args, bin);
+    handler = this._listeners[data.name];
+  } else if (type === TYPE_ACK || type === TYPE_ACK_BINARY) {
     var midP = data.indexOf('+');
     var ack = data.substring(0, midP);
     var fn = this._wait[ack];
     if (!fn) return;
     delete this._wait[ack]
+    if (bin) {
+      return fn.call(this, bin);
+    }
     fn.apply(this, JSON.parse(data.substring(midP + 1)));
     return;
-  } else if (type === TYPE_ACK_BINARY || type === TYPE_EVENT_BINARY) {
-    this._nextBin = [type, mid, data];
   }
   try {
     [].push.call(args, this._ack.bind(this, mid, {}));
