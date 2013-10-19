@@ -1,0 +1,31 @@
+{
+  "name": "binsock",
+  "version": "0.0.0",
+  "description": "binsock =======",
+  "main": "index.js",
+  "scripts": {
+    "test": "./node_modules/.bin/mocha --recursive"
+  },
+  "domains": [],
+  "engines": {
+    "node": ">=0.8"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/aantthony/binsock.git"
+  },
+  "author": "Anthony Foster <git@af.id.au>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/aantthony/binsock/issues"
+  },
+  "homepage": "https://github.com/aantthony/binsock",
+  "devDependencies": {
+    "mocha": "~1.13.0",
+    "should": "~2.0.1",
+    "sinon": "~1.7.3",
+    "ws": "~0.4.31",
+    "socket.io-client": "~0.9.16"
+  },
+  "dependencies": {}
+}
