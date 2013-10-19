@@ -4,6 +4,8 @@ binsock
 Binary-compatible and socket-io compatible WebSocket library, for node.js and web browsers.
 
 ```javascript
+var Socket = require('binsock');
+
 var ws = new WebSocket('ws://localhost:9999/1?access_token=' + access_token);
 
 var socket = new Socket(ws);
