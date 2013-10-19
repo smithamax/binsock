@@ -25,3 +25,5 @@ socket.on('something', function (data, a, b, ack) {
 })
 
 ```
+
+[![Build Status](https://travis-ci.org/aantthony/binsock.png?branch=master)](https://travis-ci.org/aantthony/binsock)
