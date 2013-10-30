@@ -34,6 +34,7 @@ describe('Socket', function () {
 
   describe('#_process', function () {
     it('should call _recv for an ACK', function () {
+      (3).should.equal(4);
       mock.expects('_recv').once().withArgs('6', '', '12+[3,4]');
       socket._process('6:::12+[3,4]', {});
     });
