@@ -4,7 +4,7 @@
   "description": "binsock =======",
   "main": "index.js",
   "scripts": {
-    "test": "./node_modules/.bin/mocha --recursive"
+    "test": "./node_modules/.bin/jscoverage lib lib-cov && COVERAGE=1 ./node_modules/.bin/mocha --recursive"
   },
   "domains": [],
   "engines": {
@@ -27,7 +27,8 @@
     "ws": "~0.4.31",
     "socket.io-client": "~0.9.16",
     "coveralls": "~2.3.0",
-    "mocha-lcov-reporter": "0.0.1"
+    "mocha-lcov-reporter": "0.0.1",
+    "jscoverage": "~0.3.8"
   },
   "dependencies": {}
 }
