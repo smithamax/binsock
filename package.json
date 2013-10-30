@@ -25,7 +25,9 @@
     "should": "~2.0.1",
     "sinon": "~1.7.3",
     "ws": "~0.4.31",
-    "socket.io-client": "~0.9.16"
+    "socket.io-client": "~0.9.16",
+    "coveralls": "~2.3.0",
+    "mocha-lcov-reporter": "0.0.1"
   },
   "dependencies": {}
 }
