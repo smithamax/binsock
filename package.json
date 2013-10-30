@@ -4,7 +4,7 @@
   "description": "binsock =======",
   "main": "index.js",
   "scripts": {
-    "test": "./node_modules/.bin/mocha --recursive && if [[ $your_var ]]; then ./node_modules/.bin/jscoverage lib lib-cov && COVERAGE=1 ./node_modules/.bin/mocha --recursive -R mocha-lcov-reporter | ./node_modules/.bin/coveralls; fi"
+    "test": "./node_modules/.bin/mocha --recursive && if [[ $TRAVIS_JOB_ID ]]; then ./node_modules/.bin/jscoverage lib lib-cov && COVERAGE=1 ./node_modules/.bin/mocha --recursive -R mocha-lcov-reporter | ./node_modules/.bin/coveralls; fi"
   },
   "domains": [],
   "engines": {
