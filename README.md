@@ -26,4 +26,4 @@ socket.on('something', function (data, a, b, ack) {
 
 ```
 
-[![Build Status](https://travis-ci.org/aantthony/binsock.png?branch=master)](https://travis-ci.org/aantthony/binsock)
+[![Build Status](https://travis-ci.org/aantthony/binsock.png?branch=master)](https://travis-ci.org/aantthony/binsock) [![Coverage Status](https://coveralls.io/repos/aantthony/binsock/badge.png?branch=master)](https://coveralls.io/r/aantthony/binsock?branch=master)
