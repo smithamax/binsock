@@ -52,6 +52,33 @@ describe('Socket', function () {
       expectation.verify();
     });
 
+    it('should discard invalid messages', function () {
+      socket._recv('4', '', ']');
+    });
+
+    it('should discard invalid binary messages', function () {
+      socket._recv('a', '', ']');
+    });
+
+
+    it('should discard invalid events', function () {
+      socket._recv('5', '', '{');
+    });
+
+    it('should discard non-array events', function () {
+      var callback = sinon.spy();
+      socket._listeners.x = callback;
+      socket._recv('5', '', '{"name": "x", "args": 999}');
+      callback.notCalled.should.be.true;
+    });
+
+    it('should discard null-args events', function () {
+      var callback = sinon.spy();
+      socket._listeners.x = callback;
+      socket._recv('5', '', '{"name": "x", "args": null}');
+      callback.notCalled.should.be.true;
+    });
+
     it('should call the event handler', function () {
 
       mock.expects('_ack').once().on(socket);

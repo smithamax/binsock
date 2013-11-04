@@ -5,8 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "[[ -z $TRAVIS_JOB_ID ]] && mocha --recursive || npm run travis",
-    "travis": "jscoverage lib lib-cov && COVERAGE=1 mocha --recursive -R mocha-lcov-reporter | coveralls && ./node_modules/.bin/mocha --recursive",
-    "coverage": "jscoverage lib lib-cov && COVERAGE=1 mocha --recursive -R html-cov > lib-cov/test.html && open lib-cov/test.html"
+    "travis": "jscoverage lib lib-cov && BS_COVERAGE=1 mocha --recursive -R mocha-lcov-reporter | coveralls && mocha --recursive",
+    "coverage": "jscoverage lib lib-cov && BS_COVERAGE=1 mocha --recursive -R html-cov > lib-cov/test.html && open lib-cov/test.html"
   },
   "domains": [],
   "engines": {

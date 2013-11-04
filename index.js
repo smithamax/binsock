@@ -1,6 +1,7 @@
-var dir = './lib/';
-if (process.env.COVERAGE){
-  dir = './lib-cov/';
-}
 
-module.exports = require(dir);
+module.exports = require('./lib');
+
+if (process.env.BS_COVERAGE){
+  var dir = './lib-cov/';
+  module.exports = require(dir);
+}
