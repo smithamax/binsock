@@ -1,7 +1,8 @@
 /*jshint nomen: false */
 
 var Socket = require('../../'),
-    sinon  = require('sinon');
+    sinon  = require('sinon')
+    should = require('should');
 
 describe('Socket', function () {
   this.timeout(10);
