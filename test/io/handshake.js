@@ -17,7 +17,7 @@ describe('Socket.IO compaible', function () {
   before(function (done) {
     app = http.createServer();
 
-    app.port = Math.random() * 35000 + 35000;
+    app.port = Math.floor(Math.random() * 0x8000) + 0x8000;
 
     var wss = new ws.Server({server: app});
 
