@@ -1,8 +1,9 @@
+'use strict';
+
 var http = require('http');
-var ws   = require('ws');
 var io   = require('socket.io-client');
 var should = require('should');
-var Socket = require('../..');
+var Binsock = require('../..');
 
 
 describe('Socket.IO compaible', function () {
@@ -11,7 +12,7 @@ describe('Socket.IO compaible', function () {
   var server;
 
   function connection (ws){
-    server = new Socket(ws);
+    server = ws;
   }
 
   before(function (done) {
@@ -19,9 +20,9 @@ describe('Socket.IO compaible', function () {
 
     app.port = Math.floor(Math.random() * 0x8000) + 0x8000;
 
-    var wss = new ws.Server({server: app});
+    var bss = new Binsock({server: app});
 
-    wss.on('connection', connection);
+    bss.on('connection', connection);
 
     app.listen(app.port, done);
   });
@@ -33,13 +34,14 @@ describe('Socket.IO compaible', function () {
 
     it('should be requested', function (done) {
 
-      app.once('request', Socket.middleware());
+      app.once('request', Binsock.middleware());
       client = io.connect('http://0.0.0.0:' + app.port);
       client.socket.on('connect', done);
     });
 
     it('should acccept JSON messages from socket.io clients', function (done) {
-      server.on('test', function (data) {
+      server.on('event', function (name, data) {
+        name.should.equal('test');
         data.x.should.equal(3);
         done();
       });

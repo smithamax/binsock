@@ -26,11 +26,13 @@
     "mocha-lcov-reporter": "0.0.1",
     "should": "~3.0.1",
     "sinon": "~1.7.3",
-    "ws": "~0.4.31",
     "jscoverage": "~0.3.8",
     "mocha": "~1.17.0",
     "socket.io-client": "~0.9.16",
-    "coveralls": "~2.6.1"
+    "coveralls": "~2.6.1",
+    "express": "^4.1.1"
   },
-  "dependencies": {}
+  "dependencies": {
+    "ws": "^0.4.31"
+  }
 }

@@ -1,0 +1,22 @@
+<!-- <script src="https://github.com/LearnBoost/socket.io-client/raw/master/socket.io.js"></script> -->
+<script src="https://raw.githubusercontent.com/LearnBoost/socket.io-client/0.9/dist/socket.io.js"></script>
+<script>
+var socket = io.connect('http://localhost:9090/test?access_token=3');
+socket.on('news', function (data) {
+  console.log('news');
+  socket.emit('messagetext', {x:3}, function (response) {
+    if (response === 'ABC') {
+      socket.emit('itworks', 3);
+    }
+  });
+
+  socket.on('hello', function (message, callback) {
+    callback(8,4,3);
+  });
+  socket.emit('test', {e:3})
+  socket.emit('test', {f:3}, function () {})
+  socket.emit('test', {g:3});
+
+});
+</script>
+Hello

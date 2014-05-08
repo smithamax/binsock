@@ -4,7 +4,7 @@ binsock
 Binary-compatible and socket-io compatible WebSocket library, for node.js and web browsers.
 
 ```javascript
-var Socket = require('binsock');
+var Socket = require('binsock').Socket;
 
 var ws = new WebSocket('ws://localhost:9999/1?access_token=' + access_token);
 
@@ -29,20 +29,22 @@ socket.on('something', function (data, a, b, ack) {
 To mount the handshake endpoint in express:
 ```javascript
 var express = require('express');
+var Binsock = require('binsock');
 var app = express();
-app.use('/socket.io', Socket.middleware());
+app.use('/socket.io', Binsock.middleware());
 
 var exports = module.exports = http.createServer(app);
-var ws = require('ws');
-var Socket = require('binsock');
-var wss = new ws.Server({server: exports});
-wss.on('connection', function (ws) {
-  var req = ws.upgradeReq;
+var wss = new Binsock(exports);
+wss.on('connection', function (socket) {
+
+  var req = socket.ws.upgradeReq;
   req.query = qs.parse(req.url.substring(req.url.indexOf('?') + 1));
 
-  var socket = new Socket(ws);
-  socket.emit('welcome', {text: 'Hello World!'});
-});
+  socket.emit('message', {text: 'Welcome!'});
+  socket.on('event', function (name, arg0, callback) {
+  	console.log('Got event of type ' + name + ':', arg0);
+  });
+})
 
 exports.listen(process.env.PORT || 8000);
 

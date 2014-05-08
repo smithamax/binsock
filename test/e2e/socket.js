@@ -1,4 +1,5 @@
-var Socket  = require('../../'),
+var Server  = require('../../'),
+    Socket  = Server.Socket,
     sinon   = require('sinon'),
     should  = require('should'),
     util    = require('util'),
@@ -16,6 +17,8 @@ WebSocket.prototype.addEventListener = function (name, fn) {
 WebSocket.prototype.send = function (data) {
   this.target.emit('message', {data: data});
 };
+WebSocket.prototype.readyState = 1;
+WebSocket.prototype.OPEN = 1;
 
 describe('Socket connection', function () {
 
@@ -39,14 +42,17 @@ describe('Socket connection', function () {
 
   beforeEach(function () {
     // Clear all the listeners
-    a._listeners = [];
+    a.removeAllListeners();
+    b.removeAllListeners();
   })
 
   it('should send an event', function (done) {
-    b.on('test', done);
+    b.on('event', function (name) {
+      name.should.equal('test');
+      done();
+    });
     a.emit('test', null);
   });
-
   it('should send a json message', function (done) {
     b.on('message', function (o) {
       o.x.y.z.should.equal(0);
@@ -60,7 +66,6 @@ describe('Socket connection', function () {
       }
     });
   });
-
   it('should send a string', function (done) {
     b.on('message', function (string) {
       string.should.equal('foo');
@@ -68,38 +73,16 @@ describe('Socket connection', function () {
     })
     a.emit('foo');
   });
-
-  it('should send a buffer', function (done) {
-    b.on('data', function (d) {
-      d.should.equal(buffer)
-      done();
-    });
-    a.emit('data', buffer);
-  });
-
   it('should send acks', function (done) {
 
     var mock = sinon.mock();
 
     mock.yields(null);
 
-    b.on('message', mock);
-    a.emit('sdjif', done);
-
-  });
-
-  it('should send binary acks', function (done) {
-    var mock = sinon.mock();
-
-
-    mock.yields(buffer);
-
-    b.on('message', mock);
-    a.emit('sdjif', function (data) {
-      data.should.equal(buffer);
-      done();
+    b.on('message', function (name, done) {
+      done(null);
     });
+    a.emit('messagetext', done);
+
   });
-
-
 });

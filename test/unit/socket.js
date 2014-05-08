@@ -1,7 +1,8 @@
 /*jshint nomen: false */
 
-var Socket = require('../../'),
-    sinon  = require('sinon')
+var Binsock = require('../../'),
+    sinon  = require('sinon'),
+    Socket = Binsock.Socket,
     should = require('should');
 
 describe('Socket', function () {
@@ -22,6 +23,7 @@ describe('Socket', function () {
   beforeEach(function () {
     mock = sinon.mock(socket);
     socket._messages = 123;
+    socket.removeAllListeners();
   });
   afterEach(function () {
     mock.verify();
@@ -36,7 +38,7 @@ describe('Socket', function () {
   describe('#_process', function () {
     it('should call _recv for an ACK', function () {
       mock.expects('_recv').once().withArgs('6', '', '12+[3,4]');
-      socket._process('6:::12+[3,4]', {});
+      socket._process({data:'6:::12+[3,4]'}, {});
     });
   });
 
@@ -44,7 +46,7 @@ describe('Socket', function () {
     it('should call the ack listener', function () {
       var expectation = sinon.expectation.create();
 
-      socket._wait['12'] = expectation;
+      socket._wait['12+'] = expectation;
 
       expectation.once().withArgs(3);
 
@@ -68,14 +70,14 @@ describe('Socket', function () {
 
     it('should discard non-array events', function () {
       var callback = sinon.spy();
-      socket._listeners.x = callback;
+      socket.on('event', callback);
       socket._recv('5', '', '{"name": "x", "args": 999}');
       callback.notCalled.should.be.true;
     });
 
     it('should discard null-args events', function () {
       var callback = sinon.spy();
-      socket._listeners.x = callback;
+      socket.on('event', callback);
       socket._recv('5', '', '{"name": "x", "args": null}');
       callback.notCalled.should.be.true;
     });
@@ -85,10 +87,10 @@ describe('Socket', function () {
       mock.expects('_ack').once().on(socket);
 
       var expectation = sinon.mock();
-      expectation.once().withArgs("3", 2).yields(30, 32);
-      socket.on('test', expectation);
+      expectation.once().withArgs('test', '3', 2).yields([4,3]);
+      socket.on('event', expectation);
 
-      socket._recv('5', '23', JSON.stringify({args:["3", 2], name:'test'}));
+      socket._recv('5', '23+', JSON.stringify({args:["3", 2], name:'test'}));
 
       expectation.verify();
 
@@ -126,66 +128,12 @@ describe('Socket', function () {
       mock.expects('_send').once().withArgs('6', '', '888+[3,"a"]');
       socket._ack('888', {}, 3, 'a');
     });
-    it('should handle binary acknowledgments', function () {
-      
-      var b = new Buffer(1);
-      var wsocket = socket.ws = {};
-      wsocket.send = sinon.mock().withArgs(b);
-
-      var sender = {};
-      mock.expects('_send').once().withArgs('b', '', '888+[]');
-
-      socket._ack('888', sender, b);
-
-      wsocket.send.verify();
-
-    });
-
-    it('should handle json + binary acknowledgments', function () {
-      
-      var b = new Buffer(1);
-      var wsocket = socket.ws = {};
-      wsocket.send = sinon.mock().withArgs(b);
-
-      var sender = {};
-      mock.expects('_send').once().withArgs('b', '', '888+[3]');
-
-      socket._ack('888', sender, 3, b);
-
-      wsocket.send.verify();
-
-    });
   });
 
   describe('#emit', function () {
     it('should create a socket.io compatible event', function () {
       mock.expects('_send');
       socket.emit('explode', {}, function () {});
-    });
-
-    it('should create binary events', function () {
-      var b = new Buffer(1);
-      var wsocket = socket.ws = {};
-      wsocket.send = sinon.mock().withArgs(b);
-
-      mock.expects('_send').withArgs('a', '123', JSON.stringify({name: 'explode', args: []}));
-      socket.emit('explode', b, function () {});
-
-      wsocket.send.verify();
-
-    });
-
-    it('should create json + binary events', function () {
-      var b = new Buffer(1);
-      var wsocket = socket.ws = {};
-      wsocket.send = sinon.mock().withArgs(b);
-      var json = {x: {y: 2}};
-
-      mock.expects('_send').withArgs('a', '123', JSON.stringify({name: 'explode', args: [json]}));
-      socket.emit('explode', json, b, function () {});
-
-      wsocket.send.verify();
-
     });
 
     it('should register the ack handler', function () {
@@ -195,7 +143,7 @@ describe('Socket', function () {
 
       socket.emit('subscribe', 999, stub);
       socket._messages.should.equal(124);
-      socket._wait[123].should.equal(stub);
+      socket._wait['123+'].should.equal(stub);
     })
 
   });
