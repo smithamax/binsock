@@ -3,6 +3,7 @@ binsock
 
 Binary-compatible and socket-io compatible WebSocket library, for node.js and web browsers.
 
+Client:
 ```javascript
 var Socket = require('binsock').Socket;
 
@@ -16,7 +17,7 @@ socket.emit('item', {x: 0,y: 0}, function (err, res) {
   console.log(res.location.lat, res.location.long);
 });
 
-socket.on('something', function (data, a, b, ack) {
+socket.on('event', function (name, data, a, b, ack) {
   if (a && b) {
     ack(null, 2);
   } else {
@@ -25,7 +26,7 @@ socket.on('something', function (data, a, b, ack) {
 })
 
 ```
-
+Server:
 To mount the handshake endpoint in express:
 ```javascript
 var express = require('express');
