@@ -35,7 +35,7 @@ var app = express();
 app.use('/socket.io', Binsock.middleware());
 
 var exports = module.exports = http.createServer(app);
-var wss = new Binsock(exports);
+var wss = new Binsock({server: exports});
 wss.on('connection', function (socket) {
 
   var req = socket.ws.upgradeReq;
